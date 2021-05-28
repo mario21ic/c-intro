@@ -56,3 +56,71 @@ export LD_LIBRARY_PATH=$PWD/build/shared
 echo "LD_LIBRARY_PATH="$LD_LIBRARY_PATH
 ldd build/use-shared-library
 ./build/use-shared-library
+
+
+echo ""
+echo "### Create Dynamic loader"
+gcc main-dynamic.c -ldl -o build/dynamic-library-loader
+
+echo "# Running"
+export LD_LIBRARY_PATH=$PWD/build/shared
+echo "LD_LIBRARY_PATH="$LD_LIBRARY_PATH
+./build/dynamic-library-loader
+
+
+echo ""
+echo "### Create Soname"
+gcc -shared build/shared/add.o build/shared/answer.o -Wl,-soname,libmyLibSoname.so.1 -o build/shared/libmyLibSoname.so.1.0.1
+objdump -p build/shared/libmyLibSoname.so.1.0.1
+ln -s libmyLibSoname.so.1.0.1 build/shared/libmyLibSoname.so
+
+echo "# Link"
+gcc -Lbuild/shared build/main.o -lmyLibSoname -o build/use-shared-library-soname
+# Alterntatively
+# gcc -Lbin  src/main.c -ltq84Soname -o bin/use-shared-library-soname
+
+echo "# Installing"
+ldconfig -v -n $PWD/build/shared
+
+echo "# Running"
+./build/use-shared-library-soname
+
+
+echo ""
+echo "### Difference between -fPIC and without it"
+objdump --disassemble build/shared/add.o | sed -n '/<add>/,/^$/p'
+objdump --disassemble build/static/add.o | sed -n '/<add>/,/^$/p'
+#readelf --relocs build/shared/add.o
+#readelf --relocs build/static/add.o
+
+
+echo ""
+echo "### Debug mode"
+#
+#  Use LD_DEBUG
+#    set it to libs to display library search paths
+#
+LD_DEBUG=libs build/use-shared-library
+
+#
+#  Setting LD_DEBUG to files to display progress for input files
+#
+LD_DEBUG=files build/use-shared-library
+
+#
+#  Setting LD_DEBUG to reloc to display relocation processing
+#
+LD_DEBUG=reloc build/use-shared-library
+
+LD_DEBUG=symbols build/use-shared-library
+
+echo ""
+echo "### List symbols in object files"
+echo "## add.o"
+nm build/static/add.o
+echo "## libmyLibSoname.so"
+nm build/shared/libmyLibSoname.so
+echo "## statically-linked"
+nm build/statically-linked
+echo "## dynamic-library-loader"
+nm build/dynamic-library-loader
