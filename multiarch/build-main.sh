@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 #gcc -o main-arm64 main.c
 
