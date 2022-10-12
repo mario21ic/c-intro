@@ -3,7 +3,7 @@
 
 int main(void) {
     lexer();
-    printf("Se leyeron %ld caracteres\n", caracteres_leidos);
+    printf("\nSe leyeron %ld caracteres\n", caracteres_leidos);
 
     return 0;
 }
