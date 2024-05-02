@@ -110,24 +110,10 @@ int main() {
   #ifdef __unix__
   printf("Hola mundo desde UNIX\n");
 
-  char hostname[256];
-  size_t hostnameSize = sizeof(hostname);
-  const char *sysctl_name = "kern.hostname";
-  if (sysctlbyname(sysctl_name, &hostname, &hostnameSize, NULL, 0) == -1) {
-	  perror("sysctlbyname");
-	  return 1;
-  }
-  printf("Hostname %s\n", hostname);
+  printSysctlStrValue("Hostname", "kern.hostname");
+  printSysctlStrValue("OS", "kern.ostype");
 
-  char osType[256];
-  size_t osTypeSize = sizeof(osType);
-  const char *sysctl_name0 = "kern.ostype";
-  if (sysctlbyname(sysctl_name0, &osType, &osTypeSize, NULL, 0) == -1) {
-	  perror("sysctlbyname");
-	  return 1;
-  }
-  printf("OS %s\n", osType);
-
+  /*
   char osVersion[256];
   size_t osVersionSize = sizeof(osVersion);
   const char *sysctl_name1 = "kern.osrelease";
@@ -136,16 +122,17 @@ int main() {
 	  return 1;
   }
   printf("Release %s\n", osVersion);
+  */
+  printSysctlStrValue("Release", "kern.osrelease");
+  //printSysctlStrValue("Version", "kern.version");
+  int osrevision = getSysctlInt("kern.osrevision");
+  printf("Revision: %d\n", osrevision);
 
-  int ncpu;
-  size_t ncpuSize = sizeof(ncpu);
-  const char *sysctl_name2 = "hw.ncpu";
-  if (sysctlbyname(sysctl_name2, &ncpu, &ncpuSize, NULL, 0) == -1) {
-	  perror("sysctlbyname");
-	  return 1;
-  }
-  printf("Number of CPUs %d\n", ncpu);
+  int ncpu = getSysctlInt("hw.ncpu");
+  printf("CPUs: %d\n", ncpu);
 
+
+  /*
   char arch[256];
   size_t archSize = sizeof(arch);
   const char *sysctl_name3 = "hw.machine_arch";
@@ -154,6 +141,8 @@ int main() {
 	  return 1;
   }
   printf("Processor Arch %s\n", arch);
+  */
+  printSysctlStrValue("Architecture", "hw.machine_arch");
 
   unsigned long realmem;
   size_t realmemSize = sizeof(realmem);
