@@ -4,8 +4,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define NUM_PROCESSES 10
-#define NUMBERS_PER_PROCESS 10
+#define NUM_PROCESSES 4
+#define NUMBERS_PER_PROCESS 25
 
 void print_numbers(int start, int end) {
     for (int i = start; i <= end; i++) {
